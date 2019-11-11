@@ -16,11 +16,16 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.media.MediaMetadata;
+import android.media.session.MediaSession;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.Nullable;
 import androidx.media.session.MediaButtonReceiver;
@@ -175,9 +180,29 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                     }
                 };
 
-
          MediaButtonReceiver.handleIntent(mediaSession, intent);
          mediaSession.setCallback(mediaSessionCallback);
+
+
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP)
+                .setState(PlaybackStateCompat.STATE_STOPPED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0)
+                .build();
+
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+                | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE,audioObject.getTitle())
+                .putString(MediaMetadata.METADATA_KEY_TITLE,audioObject.getTitle())
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST,audioObject.getSubTitle())
+                .putString(MediaMetadata.METADATA_KEY_ARTIST,audioObject.getSubTitle())
+//                .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART,audioObject.getLargeIconUrl())
+                .build();
+
+        mediaSession.setMetadata(metadata);
+        mediaSession.setPlaybackState(state);
+        mediaSession.setActive(true);
 
 
 
@@ -318,6 +343,18 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
     @Override
     public void play(AudioObject audioObject) {
         registerReceiver(myNoisyAudioStreamReceiver, noisyIntentFilter);
+
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP)
+                .setState(PlaybackStateCompat.STATE_PLAYING, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0)
+                .build();
+
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+                | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        mediaSession.setPlaybackState(state);
+        mediaSession.setActive(true);
+
         if(this.completed){
             this.resume();
         }else{
@@ -362,6 +399,19 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
 
     @Override
     public void pause() {
+
+
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP)
+                .setState(PlaybackStateCompat.STATE_PAUSED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0)
+                .build();
+
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+                | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        mediaSession.setPlaybackState(state);
+        mediaSession.setActive(true);
+
         if (!this.released && this.playing) {
             stopForeground(false);
             player.setPlayWhenReady(false);
@@ -392,6 +442,17 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
             unregisterReceiver(myNoisyAudioStreamReceiver);
 
         }
+
+        PlaybackStateCompat state = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS | PlaybackStateCompat.ACTION_STOP)
+                .setState(PlaybackStateCompat.STATE_STOPPED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 0)
+                .build();
+
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+                | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
+
+        mediaSession.setPlaybackState(state);
+        mediaSession.setActive(false);
     }
 
     @Override
