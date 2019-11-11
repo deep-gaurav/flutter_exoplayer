@@ -192,15 +192,8 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
 
-        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
-                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE,audioObject.getTitle())
-                .putString(MediaMetadata.METADATA_KEY_TITLE,audioObject.getTitle())
-                .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST,audioObject.getSubTitle())
-                .putString(MediaMetadata.METADATA_KEY_ARTIST,audioObject.getSubTitle())
-//                .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART,audioObject.getLargeIconUrl())
-                .build();
 
-        mediaSession.setMetadata(metadata);
+
         mediaSession.setPlaybackState(state);
         mediaSession.setActive(true);
 
@@ -352,6 +345,15 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
 
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadata.METADATA_KEY_DISPLAY_TITLE,audioObject.getTitle())
+                .putString(MediaMetadata.METADATA_KEY_TITLE,audioObject.getTitle())
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST,audioObject.getSubTitle())
+                .putString(MediaMetadata.METADATA_KEY_ARTIST,audioObject.getSubTitle())
+//                .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART,audioObject.getLargeIconUrl())
+                .build();
+
+        mediaSession.setMetadata(metadata);
         mediaSession.setPlaybackState(state);
         mediaSession.setActive(true);
 
