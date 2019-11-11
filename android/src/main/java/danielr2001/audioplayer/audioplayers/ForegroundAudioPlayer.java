@@ -11,8 +11,11 @@ import danielr2001.audioplayer.enums.PlayerMode;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -75,6 +78,11 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
     private ArrayList<AudioObject> audioObjects;
     private AudioObject audioObject;
 
+
+    private IntentFilter noisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private BecomingNoisyReceiver myNoisyAudioStreamReceiver = new BecomingNoisyReceiver();
+
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -85,9 +93,94 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.context = getApplicationContext();
         mediaSession = new MediaSessionCompat(this.context, "playback");
-        // ! TODO handle MediaButtonReceiver's callbacks
-        // MediaButtonReceiver.handleIntent(mediaSession, intent);
-        // mediaSession.setCallback(mediaSessionCallback);
+
+        MediaSessionCompat.Callback mediaSessionCallback = new
+                MediaSessionCompat.Callback() {
+                    @Override
+                    public void onPlay() {
+                        super.onPlay();
+
+                        AudioObject currentAudioObject;
+                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        } else {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                        }
+
+                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                            resume();
+                        } else {
+                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.PLAY);
+                        }
+
+                    }
+
+                    @Override
+                    public void onPause() {
+                        super.onPause();
+
+                        AudioObject currentAudioObject;
+                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        } else {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                        }
+
+                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                            resume();
+                        } else {
+                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.PLAY);
+                        }
+                    }
+
+                    @Override
+                    public void onSkipToNext() {
+                        super.onSkipToNext();
+                        AudioObject currentAudioObject;
+                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        } else {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                        }
+
+                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                            next();
+                        } else {
+                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.NEXT);
+                        }
+                    }
+
+                    @Override
+                    public void onSkipToPrevious() {
+                        super.onSkipToPrevious();
+                        AudioObject currentAudioObject;
+                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        } else {
+                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                        }
+
+                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                            previous();
+                        } else {
+                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.PREVIOUS);
+                        }
+                    }
+
+                    @Override
+                    public void onSeekTo(long pos) {
+                        super.onSeekTo(pos);
+
+                        seekPosition((int)pos);
+                    }
+                };
+
+
+         MediaButtonReceiver.handleIntent(mediaSession, intent);
+         mediaSession.setCallback(mediaSessionCallback);
+
+
+
         if (intent.getAction() != null) {
             AudioObject currentAudioObject;
             if (this.playerMode == PlayerMode.PLAYLIST) {
@@ -224,6 +317,7 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
 
     @Override
     public void play(AudioObject audioObject) {
+        registerReceiver(myNoisyAudioStreamReceiver, noisyIntentFilter);
         if(this.completed){
             this.resume();
         }else{
@@ -295,6 +389,8 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
             mediaNotificationManager.setIsShowing(false);
             stopForeground(true);
             player.stop(true);
+            unregisterReceiver(myNoisyAudioStreamReceiver);
+
         }
     }
 
@@ -517,18 +613,15 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
         });
     }
 
-    //// private MediaSessionCompat.Callback mediaSessionCallback = new
-    //// MediaSessionCompat.Callback() {
-    //// @Override
-    //// public void onPlay() {
-    //// Log.d("hii","play!");
-    //// super.onPlay();
-    //// }
+    private class BecomingNoisyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+                pause();
+            }
+        }
+    }
 
-    //// @Override
-    //// public void onPause() {
-    //// Log.d("hii","pause!");
-    //// super.onPause();
-    //// }
-    //// };
+
+
 }
