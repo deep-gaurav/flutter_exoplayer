@@ -101,16 +101,16 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                         super.onPlay();
 
                         AudioObject currentAudioObject;
-                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        if (playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = audioObjects.get(player.getCurrentWindowIndex());
                         } else {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                            currentAudioObject = audioObject;
                         }
 
                         if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             resume();
                         } else {
-                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.PLAY);
+                            ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.PLAY);
                         }
 
                     }
@@ -120,16 +120,16 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                         super.onPause();
 
                         AudioObject currentAudioObject;
-                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        if (playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = audioObjects.get(player.getCurrentWindowIndex());
                         } else {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                            currentAudioObject = audioObject;
                         }
 
                         if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
-                            resume();
+                            pause();
                         } else {
-                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.PLAY);
+                            ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.PAUSE);
                         }
                     }
 
@@ -137,16 +137,16 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                     public void onSkipToNext() {
                         super.onSkipToNext();
                         AudioObject currentAudioObject;
-                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        if (playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = audioObjects.get(player.getCurrentWindowIndex());
                         } else {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                            currentAudioObject = audioObject;
                         }
 
                         if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             next();
                         } else {
-                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.NEXT);
+                            ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.NEXT);
                         }
                     }
 
@@ -154,16 +154,16 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                     public void onSkipToPrevious() {
                         super.onSkipToPrevious();
                         AudioObject currentAudioObject;
-                        if (ForegroundAudioPlayer.this.playerMode == PlayerMode.PLAYLIST) {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObjects.get(player.getCurrentWindowIndex());
+                        if (playerMode == PlayerMode.PLAYLIST) {
+                            currentAudioObject = audioObjects.get(player.getCurrentWindowIndex());
                         } else {
-                            currentAudioObject = ForegroundAudioPlayer.this.audioObject;
+                            currentAudioObject = audioObject;
                         }
 
                         if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             previous();
                         } else {
-                            ref.handleNotificationActionCallback(ForegroundAudioPlayer.this.foregroundAudioPlayer, NotificationActionName.PREVIOUS);
+                            ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.PREVIOUS);
                         }
                     }
 
