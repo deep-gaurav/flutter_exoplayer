@@ -112,7 +112,7 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                             currentAudioObject = audioObject;
                         }
 
-                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                        if (currentAudioObject!=null && currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             resume();
                         } else {
                             ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.PLAY);
@@ -131,7 +131,7 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                             currentAudioObject = audioObject;
                         }
 
-                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                        if (currentAudioObject!=null && currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             pause();
                         } else {
                             ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.PAUSE);
@@ -148,7 +148,7 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                             currentAudioObject = audioObject;
                         }
 
-                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                        if (currentAudioObject!=null && currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             next();
                         } else {
                             ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.NEXT);
@@ -165,7 +165,7 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
                             currentAudioObject = audioObject;
                         }
 
-                        if (currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
+                        if (currentAudioObject!=null && currentAudioObject.getNotificationActionCallbackMode() == NotificationActionCallbackMode.DEFAULT) {
                             previous();
                         } else {
                             ref.handleNotificationActionCallback(foregroundAudioPlayer, NotificationActionName.PREVIOUS);
@@ -199,7 +199,7 @@ public class ForegroundAudioPlayer extends Service implements AudioPlayer {
 
 
 
-        if (intent.getAction() != null) {
+        if (intent!=null && intent.getAction() != null) {
             AudioObject currentAudioObject;
             if (this.playerMode == PlayerMode.PLAYLIST) {
                 currentAudioObject = this.audioObjects.get(player.getCurrentWindowIndex());
