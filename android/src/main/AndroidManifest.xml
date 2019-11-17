@@ -3,7 +3,9 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   
   <application>
-    <service android:name="danielr2001.audioplayer.audioplayers.ForegroundAudioPlayer" >
+    <service android:name="danielr2001.audioplayer.audioplayers.ForegroundAudioPlayer"
+        android:stopWithTask="true"
+        >
         <!--<intent-filter>-->
           <!--<action android:name="android.intent.action.MEDIA_BUTTON" />-->
         <!--</intent-filter>-->
